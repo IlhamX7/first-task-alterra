@@ -5,22 +5,35 @@ import (
 	"strings"
 )
 
+func ubahHuruf(setence string) string {
+	originalAlphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	shiftedAlphabet := "KLMNOPQRSTUVWXYZABCDEFGHIJ"
+
+	shiftMap := make(map[rune]rune)
+	for i, char := range originalAlphabet {
+		shiftMap[char] = rune(shiftedAlphabet[i])
+	}
+
+	upperInput := strings.ToUpper(setence)
+	var result strings.Builder
+
+	for _, char := range upperInput {
+		if char == ' ' {
+			result.WriteRune(' ')
+		} else {
+			shiftedChar, exists := shiftMap[char]
+			if exists {
+				result.WriteRune(shiftedChar)
+			} else {
+				result.WriteRune(char)
+			}
+		}
+	}
+
+	return result.String()
+}
+
 func main() {
-	var kata string
-	var kataDibalik string = ""
-
-	fmt.Print("Silahkan masukan kata: ")
-	fmt.Scanln(&kata)
-	length := len(kata)
-
-	for i := length - 1; i >= 0; i-- {
-		kataDibalik = kataDibalik + string(kata[i])
-	}
-
-	if strings.ToLower(kata) == strings.ToLower(kataDibalik) {
-		fmt.Println("true")
-	} else {
-		fmt.Println("false")
-	}
-
+	input := "SEPULSA OKE"
+	fmt.Println(ubahHuruf(input))
 }
