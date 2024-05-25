@@ -1,39 +1,32 @@
 package main
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
-func ubahHuruf(setence string) string {
-	originalAlphabet := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	shiftedAlphabet := "KLMNOPQRSTUVWXYZABCDEFGHIJ"
-
-	shiftMap := make(map[rune]rune)
-	for i, char := range originalAlphabet {
-		shiftMap[char] = rune(shiftedAlphabet[i])
+func findMaxSumSubArray(k int, arr []int) int {
+	n := len(arr)
+	if n < k {
+		return 0
 	}
 
-	upperInput := strings.ToUpper(setence)
-	var result strings.Builder
+	windowSum := 0
+	for i := 0; i < k; i++ {
+		windowSum += arr[i]
+	}
 
-	for _, char := range upperInput {
-		if char == ' ' {
-			result.WriteRune(' ')
-		} else {
-			shiftedChar, exists := shiftMap[char]
-			if exists {
-				result.WriteRune(shiftedChar)
-			} else {
-				result.WriteRune(char)
-			}
+	maxSum := windowSum
+
+	for i := k; i < n; i++ {
+		windowSum += arr[i] - arr[i-k]
+		if windowSum > maxSum {
+			maxSum = windowSum
 		}
 	}
 
-	return result.String()
+	return maxSum
 }
 
 func main() {
-	input := "SEPULSA OKE"
-	fmt.Println(ubahHuruf(input))
+	k := 2
+	arr := []int{2, 3, 4, 1, 5}
+	fmt.Println(findMaxSumSubArray(k, arr))
 }

@@ -1,19 +1,25 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
-func cetakTablePerkalian(number int) {
-	for i := 1; i <= number; i++ {
-		for j := 1; j <= number; j++ {
-			fmt.Printf("%d ", i*j)
-		}
-		fmt.Println()
+func ArrayUnique(arrayA, arrayB []int) []int {
+	elementMap := make(map[int]bool)
+	for _, num := range arrayB {
+		elementMap[num] = true
 	}
+
+	var result []int
+	for _, num := range arrayA {
+		if !elementMap[num] {
+			result = append(result, num)
+		}
+	}
+
+	return result
 }
 
 func main() {
-	input := 9
-	cetakTablePerkalian(input)
+	arrayA := []int{3, 8}
+	arrayB := []int{2, 8}
+	fmt.Println(ArrayUnique(arrayA, arrayB))
 }

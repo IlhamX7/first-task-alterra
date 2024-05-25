@@ -2,28 +2,24 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
-func DrawXYZ(N int) string {
-	var result strings.Builder
-	for i := 1; i <= N; i++ {
-		for j := 1; j <= N; j++ {
-			position := (i-1)*N + j
-			if position%3 == 0 {
-				result.WriteString("X ")
-			} else if position%2 == 0 {
-				result.WriteString("Z ")
-			} else {
-				result.WriteString("Y ")
-			}
+func caesar(offset int, input string) string {
+	shifted := []rune(input)
+
+	for i, char := range input {
+		if char >= 'a' && char <= 'z' {
+			shifted[i] = 'a' + (char-'a'+rune(offset))%26
+		} else {
+			shifted[i] = char
 		}
-		result.WriteString("\n")
 	}
-	return result.String()
+
+	return string(shifted)
 }
 
 func main() {
-	input := 5
-	fmt.Println(DrawXYZ(input))
+	offset := 2
+	input := "alta"
+	fmt.Println(caesar(offset, input))
 }
