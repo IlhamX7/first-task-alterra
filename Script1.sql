@@ -1,26 +1,26 @@
 CREATE TABLE "Users" (
 	id SERIAL PRIMARY KEY,
-	name VARCHAR(100),
-	email VARCHAR(100),
-	password VARCHAR(100),
+	name VARCHAR(200),
+	email VARCHAR(200),
+	password VARCHAR(200),
 	address VARCHAR(255),
-	phone VARCHAR(20),
+	phone VARCHAR(200),
 	bird_date DATE,
 	created_at timestamp default now()
 );
 
 CREATE TABLE "Genres" (
 	id SERIAL PRIMARY KEY,
-	genre_name VARCHAR(10) NOT NULL,
+	genre_name VARCHAR(200) NOT NULL,
 	created_at timestamp default now()
 );
 
 CREATE TABLE "Books" (
 	id SERIAL PRIMARY KEY,
 	genre_id INT,
-	title VARCHAR(100) NOT NULL,
-	author VARCHAR(20),
-	publisher VARCHAR(20),
+	title VARCHAR(200) NOT NULL,
+	author VARCHAR(200),
+	publisher VARCHAR(200),
 	publish_year INT,
 	created_at timestamp default now(),
 	FOREIGN KEY (genre_id) REFERENCES "Genres"(id)
@@ -41,10 +41,10 @@ CREATE TABLE "Loans" (
 
 CREATE TABLE "Admins" (
 	id SERIAL PRIMARY KEY,
-	name VARCHAR(50),
-	email VARCHAR(50),
-	password VARCHAR(50),
-	phone VARCHAR(20),
+	name VARCHAR(200),
+	email VARCHAR(200),
+	password VARCHAR(200),
+	phone VARCHAR(200),
 	created_at timestamp default now()
 );
 
@@ -52,9 +52,9 @@ CREATE TABLE "book_request" (
 	id SERIAL PRIMARY KEY,
 	user_id INT,
 	approved_admin_id INT,
-	title VARCHAR(100),
-	author VARCHAR(20),
-	publisher VARCHAR(100),
+	title VARCHAR(200),
+	author VARCHAR(200),
+	publisher VARCHAR(200),
 	publish_year INT,
 	status_request BOOL DEFAULT TRUE,
 	created_at timestamp default now(),
