@@ -1,5 +1,5 @@
 CREATE TABLE "Users" (
-	id INT PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	name VARCHAR(100),
 	email VARCHAR(100),
 	password VARCHAR(100),
@@ -10,13 +10,13 @@ CREATE TABLE "Users" (
 );
 
 CREATE TABLE "Genres" (
-	id INT PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	genre_name VARCHAR(10) NOT NULL,
 	created_at timestamp default now()
 );
 
 CREATE TABLE "Books" (
-	id INT PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	genre_id INT,
 	title VARCHAR(100) NOT NULL,
 	author VARCHAR(20),
@@ -27,7 +27,7 @@ CREATE TABLE "Books" (
 );
 
 CREATE TABLE "Loans" (
-	id INT PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	user_id INT,
 	book_id INT,
 	deadline_date DATE NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE "Loans" (
 );
 
 CREATE TABLE "Admins" (
-	id INT PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	name VARCHAR(50),
 	email VARCHAR(50),
 	password VARCHAR(50),
@@ -49,7 +49,7 @@ CREATE TABLE "Admins" (
 );
 
 CREATE TABLE "book_request" (
-	id INT PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	user_id INT,
 	approved_admin_id INT,
 	title VARCHAR(100),
