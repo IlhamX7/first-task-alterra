@@ -2,91 +2,38 @@ package main
 
 import (
 	"first-task-alterra/configs"
-	"first-task-alterra/internal/controllers"
+	"first-task-alterra/internal/controllers/todos"
+	"first-task-alterra/internal/controllers/users"
 	"first-task-alterra/internal/models"
 	"fmt"
+
+	"github.com/labstack/echo/v4"
 )
 
 func main() {
-	setup := configs.ImportSetting()
-	connection, err := configs.ConnectDB(setup)
+	cfg := configs.ImportSetting()
+	db, err := configs.ConnectDB(cfg)
 	if err != nil {
 		fmt.Println("Stop program, masalah pada database", err.Error())
-		return
+	}
+	if err := db.AutoMigrate(&models.User{}, &models.Todo{}); err != nil {
+		fmt.Println("Berhasil memasukan table user dan todo", err.Error())
 	}
 
-	// connection.AutoMigrate(&models.User{}, &models.Todo{})
+	um := models.NewUserModel(db)
+	uc := users.NewUserController(um)
 
-	var inputMenu int
-	um := models.NewUserModel(connection)
-	uc := controllers.NewUserController(um)
+	tm := models.NewTodoModel(db)
+	tc := todos.NewTodoController(tm)
 
-	tu := models.NewTodoModel(connection)
-	tc := controllers.NewTodoController(tu)
+	e := echo.New()
+	e.POST("/register", uc.Register)
+	e.POST("/login", uc.Login)
 
-	for inputMenu != 9 {
-		fmt.Println("Pilih menu")
-		fmt.Println("1. Login")
-		fmt.Println("2. Register")
-		fmt.Println("9. Keluar")
-		fmt.Print("Masukkan input: ")
-		fmt.Scanln(&inputMenu)
-		if inputMenu == 1 {
-			var isLogin = true
-			var inputMenu2 int
-			data, err := uc.Login()
-			if err != nil {
-				fmt.Println("Terjadi error pada saat login, error: ", err.Error())
-				return
-			}
+	e.POST("/todos", tc.AddTodo)
+	e.PUT("/todos/:id", tc.UpdateTodo)
+	e.GET("/todos/:id", tc.FindTodo)
+	e.DELETE("/todos/:id", tc.DeleteTodo)
 
-			for isLogin {
-				fmt.Println("Selamat datang ", data.Name, ",")
-				fmt.Println("Pilih menu")
-				fmt.Println("1. Tambah Kegiatan")
-				fmt.Println("2. Update Kegiatan")
-				fmt.Println("3. Hapus Kegiatan")
-				fmt.Println("4. Tampilkan daftar kegiatan")
-				fmt.Println("9. Keluar")
-				fmt.Print("Masukkan input: ")
-				fmt.Scanln(&inputMenu2)
-				if inputMenu2 == 9 {
-					isLogin = false
-				} else if inputMenu2 == 1 {
-					_, err := tc.AddTodo(data.ID)
-					if err != nil {
-						fmt.Println("error ketika menambahkan aktivitas")
-						return
-					}
-					fmt.Println("berhasil menambahkan aktivitas")
-				} else if inputMenu2 == 2 {
-					_, err := tc.UpdateTodo(data.ID)
-					if err != nil {
-						fmt.Println("error ketika mengubah aktivitas")
-						return
-					}
-					fmt.Println("berhasil mengubah aktivitas")
-				} else if inputMenu2 == 3 {
-					_, err := tc.DeleteTodo(data.ID)
-					if err != nil {
-						fmt.Println("error ketika menghapus aktivitas")
-						return
-					}
-					fmt.Println("berhasil menghapus aktivitas")
-				} else if inputMenu2 == 4 {
-					data, err := tc.FindTodo(data.ID)
-					if err != nil {
-						fmt.Println("error ketika menampilkan daftar aktivitas")
-						return
-					}
-					fmt.Println("berhasil menampilkan daftar aktivitas")
-					fmt.Println(data)
-				}
-			}
-
-		} else if inputMenu == 2 {
-			uc.Register()
-		}
-	}
-	fmt.Println("terima kasih")
+	e.Start(":8000")
 }

@@ -23,22 +23,26 @@ func NewTodoModel(connection *gorm.DB) *TodoModel {
 	}
 }
 
-func (tm *TodoModel) AddTodo(newData Todo) (Todo, error) {
-	newData.Mark = false
-	err := tm.db.Create(&newData).Error
+func (tm *TodoModel) AddTodo(newActivity string, userId uint) (Todo, error) {
+	var todo Todo
+	todo.Activity = newActivity
+	todo.Owner = userId
+	err := tm.db.Create(&todo).Error
 	if err != nil {
 		return Todo{}, err
 	}
-	return newData, nil
+	return todo, nil
 }
 
-func (tm *TodoModel) UpdateTodo(owner uint, newActivity string) (Todo, error) {
+func (tm *TodoModel) UpdateTodo(id uint, newActivity string, newMark bool, owner uint) (Todo, error) {
 	var todo Todo
-	err := tm.db.Where("owner = ?", owner).First(&todo).Error
+	err := tm.db.Where("ID = ?", id).First(&todo).Error
 	if err != nil {
 		return Todo{}, err
 	}
 	todo.Activity = newActivity
+	todo.Mark = newMark
+	todo.Owner = owner
 	todo.UpdatedAt = time.Now()
 
 	err = tm.db.Save(&todo).Error
@@ -49,9 +53,9 @@ func (tm *TodoModel) UpdateTodo(owner uint, newActivity string) (Todo, error) {
 	return todo, nil
 }
 
-func (tm *TodoModel) DeleteTodo(owner uint) (Todo, error) {
+func (tm *TodoModel) DeleteTodo(id uint) (Todo, error) {
 	var todo Todo
-	err := tm.db.Where("owner = ?", owner).First(&todo).Error
+	err := tm.db.Where("ID = ?", id).First(&todo).Error
 	if err != nil {
 		return Todo{}, err
 	}
