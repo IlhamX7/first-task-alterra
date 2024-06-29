@@ -6,8 +6,12 @@ import (
 	"first-task-alterra/internal/controllers/users"
 	"first-task-alterra/internal/models"
 	"fmt"
+	"os"
 
+	"github.com/golang-jwt/jwt/v5"
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -27,13 +31,32 @@ func main() {
 	tc := todos.NewTodoController(tm)
 
 	e := echo.New()
+	e.GET("/hello", func(c echo.Context) error {
+		return c.JSON(200, "hello world")
+	})
+
 	e.POST("/register", uc.Register)
 	e.POST("/login", uc.Login)
 
-	e.POST("/todos", tc.AddTodo)
-	e.PUT("/todos/:id", tc.UpdateTodo)
-	e.GET("/todos/:id", tc.FindTodo)
-	e.DELETE("/todos/:id", tc.DeleteTodo)
+	jwtKey := os.Getenv("JWT_SECRET")
+	if jwtKey == "" {
+		fmt.Println("JWT secret key not found in environment variables")
+	}
+
+	t := e.Group("/todos")
+	t.Use(echojwt.WithConfig(
+		echojwt.Config{
+			SigningKey:    []byte(jwtKey),
+			SigningMethod: jwt.SigningMethodHS256.Name,
+		},
+	))
+	t.POST("", tc.AddTodo)
+	t.PUT("/:id", tc.UpdateTodo)
+	t.GET("", tc.FindTodo)
+	t.DELETE("/:id", tc.DeleteTodo)
+
+	e.Pre(middleware.RemoveTrailingSlash())
+	e.Use(middleware.Logger())
 
 	e.Start(":8000")
 }

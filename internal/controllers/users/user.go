@@ -4,6 +4,8 @@ import (
 	"first-task-alterra/internal/helper"
 	"first-task-alterra/internal/models"
 
+	"first-task-alterra/internal/utils"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -27,7 +29,11 @@ func (uc *UserController) Login(c echo.Context) error {
 	if err != nil {
 		return c.JSON(500, helper.ResponseFormat(500, "server error", nil))
 	}
-	return c.JSON(200, helper.ResponseFormat(200, "success login", ToLoginReponse(result)))
+	token, err := utils.GenerateToken(result.ID)
+	if err != nil {
+		return c.JSON(500, helper.ResponseFormat(500, "privacy error", nil))
+	}
+	return c.JSON(200, helper.ResponseFormat(200, "success login", ToLoginReponse(result, token)))
 }
 
 func (uc *UserController) Register(c echo.Context) error {
@@ -40,7 +46,11 @@ func (uc *UserController) Register(c echo.Context) error {
 	if err != nil {
 		return c.JSON(400, helper.ResponseFormat(400, "input error", nil))
 	}
-	_, err = uc.model.Register(data)
+	hashedPassword, err := utils.HashPassword(data.Password)
+	if err != nil {
+		return c.JSON(400, helper.ResponseFormat(400, "input error", nil))
+	}
+	_, err = uc.model.Register(data, hashedPassword)
 	if err != nil {
 		return c.JSON(500, helper.ResponseFormat(500, "server error", nil))
 	}

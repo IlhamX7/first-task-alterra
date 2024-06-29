@@ -1,7 +1,10 @@
 package models
 
 import (
+	"errors"
 	"time"
+
+	"first-task-alterra/internal/utils"
 
 	"gorm.io/gorm"
 )
@@ -26,16 +29,21 @@ func NewUserModel(connection *gorm.DB) *UserModel {
 	}
 }
 
-func (um *UserModel) Login(email string, password string) (User, error) {
-	var result User
-	err := um.db.Where("email = ? AND password = ?", email, password).First(&result).Error
+func (um *UserModel) Login(email, password string) (User, error) {
+	var user User
+	err := um.db.Where("email = ?", email).First(&user).Error
 	if err != nil {
-		return User{}, err
+		return User{}, errors.New("user not found")
 	}
-	return result, nil
+	err = utils.VerifyPassword(user.Password, password)
+	if err != nil {
+		return User{}, errors.New("invalid credentials")
+	}
+	return user, nil
 }
 
-func (um *UserModel) Register(newUser User) (bool, error) {
+func (um *UserModel) Register(newUser User, hashPassword string) (bool, error) {
+	newUser.Password = hashPassword
 	err := um.db.Create(&newUser).Error
 	if err != nil {
 		return false, err

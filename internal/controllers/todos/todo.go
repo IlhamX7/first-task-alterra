@@ -4,6 +4,9 @@ import (
 	"first-task-alterra/internal/helper"
 	"first-task-alterra/internal/models"
 
+	"first-task-alterra/internal/utils"
+
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 )
 
@@ -23,11 +26,8 @@ func (tc *TodoController) AddTodo(c echo.Context) error {
 	if err != nil {
 		return c.JSON(400, helper.ResponseFormat(400, "input error", nil))
 	}
-	getId, err := helper.IntToUint(input.UserId)
-	if err != nil {
-		return c.JSON(400, helper.ResponseFormat(400, "input error", nil))
-	}
-	_, err = tc.model.AddTodo(input.Activity, getId)
+	var userID = utils.DecodeToken(c.Get("user").(*jwt.Token))
+	_, err = tc.model.AddTodo(input.Activity, userID)
 	if err != nil {
 		return c.JSON(500, helper.ResponseFormat(500, "server error", nil))
 	}
@@ -67,12 +67,8 @@ func (tc *TodoController) DeleteTodo(c echo.Context) error {
 }
 
 func (tc *TodoController) FindTodo(c echo.Context) error {
-	id := c.Param("id")
-	getId, err := helper.StringToUint(id)
-	if err != nil {
-		return c.JSON(400, helper.ResponseFormat(400, "input error", nil))
-	}
-	data, err := tc.model.FindTodo(getId)
+	var userID = utils.DecodeToken(c.Get("user").(*jwt.Token))
+	data, err := tc.model.FindTodo(userID)
 	if err != nil {
 		return c.JSON(500, helper.ResponseFormat(500, "server error", nil))
 	}
