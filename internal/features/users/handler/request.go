@@ -1,8 +1,8 @@
-package users
+package handler
 
 import (
-	"first-task-alterra/internal/helper"
-	"first-task-alterra/internal/models"
+	"first-task-alterra/internal/features/users"
+	"first-task-alterra/internal/utils"
 )
 
 type LoginRequest struct {
@@ -18,16 +18,16 @@ type RegisterRequest struct {
 	BirthDate string `json:"birth_date"` // example 2024-06-28
 }
 
-func ToModelUsers(r RegisterRequest) (models.User, error) {
-	parsedTime, err := helper.StringToDate(r.BirthDate)
+func ToModelUsers(r RegisterRequest) users.User {
+	parsedTime, err := utils.StringToDate(r.BirthDate)
 	if err != nil {
-		return models.User{}, err
+		return users.User{}
 	}
-	return models.User{
+	return users.User{
 		Name:      r.Name,
 		Password:  r.Password,
 		Email:     r.Email,
 		Phone:     r.Phone,
 		BirthDate: parsedTime,
-	}, nil
+	}
 }

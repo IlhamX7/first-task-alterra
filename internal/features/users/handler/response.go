@@ -1,8 +1,6 @@
-package users
+package handler
 
-import (
-	"first-task-alterra/internal/models"
-)
+import "first-task-alterra/internal/features/users"
 
 type LoginResponse struct {
 	// ID        uint      `json:"id"`
@@ -14,7 +12,7 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
-func ToLoginReponse(input models.User, tkn string) LoginResponse {
+func ToLoginReponse(input users.User, tkn string) LoginResponse {
 	return LoginResponse{
 		// ID:        input.ID,
 		// Name:      input.Name,

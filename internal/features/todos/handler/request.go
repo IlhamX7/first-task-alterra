@@ -1,12 +1,11 @@
-package todos
+package handler
 
 import (
-	"first-task-alterra/internal/models"
+	"first-task-alterra/internal/features/todos"
 )
 
 type CreateRequest struct {
 	Activity string `json:"activity"`
-	UserId   int    `json:"user_id"`
 }
 
 type UpdateRequest struct {
@@ -15,15 +14,14 @@ type UpdateRequest struct {
 	Mark     bool   `json:"mark"`
 }
 
-func ToModelTodosCreate(r CreateRequest) models.Todo {
-	return models.Todo{
+func ToModelTodosCreate(r CreateRequest) todos.Todo {
+	return todos.Todo{
 		Activity: r.Activity,
-		Owner:    uint(r.UserId),
 	}
 }
 
-func ToModelTodosUpdate(r UpdateRequest) models.Todo {
-	return models.Todo{
+func ToModelTodosUpdate(r UpdateRequest) todos.Todo {
+	return todos.Todo{
 		Activity: r.Activity,
 		Owner:    r.UserId,
 		Mark:     r.Mark,

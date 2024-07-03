@@ -2,9 +2,13 @@ package main
 
 import (
 	"first-task-alterra/configs"
-	"first-task-alterra/internal/controllers/todos"
-	"first-task-alterra/internal/controllers/users"
-	"first-task-alterra/internal/models"
+	userHandler "first-task-alterra/internal/features/users/handler"
+	userRepository "first-task-alterra/internal/features/users/repository"
+	userServices "first-task-alterra/internal/features/users/services"
+
+	todoHandler "first-task-alterra/internal/features/todos/handler"
+	todoRepository "first-task-alterra/internal/features/todos/repository"
+	todoServices "first-task-alterra/internal/features/todos/services"
 	"fmt"
 	"os"
 
@@ -20,23 +24,28 @@ func main() {
 	if err != nil {
 		fmt.Println("Stop program, masalah pada database", err.Error())
 	}
-	if err := db.AutoMigrate(&models.User{}, &models.Todo{}); err != nil {
-		fmt.Println("Berhasil memasukan table user dan todo", err.Error())
+	if err := db.AutoMigrate(&userRepository.User{}); err != nil {
+		fmt.Println("Ada yg bermasalah saat memasukan table user", err.Error())
+	}
+	if err := db.AutoMigrate(&todoRepository.Todo{}); err != nil {
+		fmt.Println("Ada yg bermasalah saat memasukan table todo", err.Error())
 	}
 
-	um := models.NewUserModel(db)
-	uc := users.NewUserController(um)
+	um := userRepository.NewUserModel(db)
+	us := userServices.NewUserService(um)
+	uc := userHandler.NewUserController(us)
 
-	tm := models.NewTodoModel(db)
-	tc := todos.NewTodoController(tm)
+	tm := todoRepository.NewTodoModel(db)
+	ts := todoServices.NewTodoService(tm)
+	tc := todoHandler.NewTodoController(ts)
 
 	e := echo.New()
 	e.GET("/hello", func(c echo.Context) error {
 		return c.JSON(200, "hello world")
 	})
 
-	e.POST("/register", uc.Register)
-	e.POST("/login", uc.Login)
+	e.POST("/register", uc.Register())
+	e.POST("/login", uc.Login())
 
 	jwtKey := os.Getenv("JWT_SECRET")
 	if jwtKey == "" {
@@ -50,10 +59,10 @@ func main() {
 			SigningMethod: jwt.SigningMethodHS256.Name,
 		},
 	))
-	t.POST("", tc.AddTodo)
-	t.PUT("/:id", tc.UpdateTodo)
-	t.GET("", tc.FindTodo)
-	t.DELETE("/:id", tc.DeleteTodo)
+	t.POST("", tc.AddTodo())
+	t.PUT("/:id", tc.UpdateTodo())
+	// t.GET("", tc.FindTodo)
+	// t.DELETE("/:id", tc.DeleteTodo)
 
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Logger())

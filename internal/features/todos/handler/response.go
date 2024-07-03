@@ -1,7 +1,7 @@
-package todos
+package handler
 
 import (
-	"first-task-alterra/internal/models"
+	"first-task-alterra/internal/features/todos"
 )
 
 type TodoResponse struct {
@@ -11,7 +11,7 @@ type TodoResponse struct {
 	Owner    uint   `json:"owner"`
 }
 
-func ToTodoReponse(input models.Todo) TodoResponse {
+func ToTodoReponse(input todos.Todo) TodoResponse {
 	return TodoResponse{
 		ID:       input.ID,
 		Activity: input.Activity,
