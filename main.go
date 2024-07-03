@@ -61,8 +61,8 @@ func main() {
 	))
 	t.POST("", tc.AddTodo())
 	t.PUT("/:id", tc.UpdateTodo())
-	// t.GET("", tc.FindTodo)
-	// t.DELETE("/:id", tc.DeleteTodo)
+	t.GET("", tc.FindTodo())
+	t.DELETE("/:id", tc.DeleteTodo())
 
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Logger())

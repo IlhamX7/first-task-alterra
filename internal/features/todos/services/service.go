@@ -44,3 +44,19 @@ func (ts *TodoServices) UpdateTodo(id uint, newActivity string, newMark bool, ow
 	}
 	return nil
 }
+
+func (ts *TodoServices) FindTodo(owner uint) ([]todos.Todo, error) {
+	data, err := ts.qry.FindTodo(owner)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (ts *TodoServices) DeleteTodo(id uint) (todos.Todo, error) {
+	data, err := ts.qry.DeleteTodo(id)
+	if err != nil {
+		return todos.Todo{}, err
+	}
+	return data, nil
+}

@@ -56,3 +56,29 @@ func (tc *TodoController) UpdateTodo() echo.HandlerFunc {
 		return c.JSON(200, helper.ResponseFormat(200, "success update data", nil))
 	}
 }
+
+func (tc *TodoController) FindTodo() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var userID = utils.DecodeToken(c.Get("user").(*jwt.Token))
+		data, err := tc.srv.FindTodo(userID)
+		if err != nil {
+			return c.JSON(500, helper.ResponseFormat(500, "server error", nil))
+		}
+		return c.JSON(200, helper.ResponseFormat(200, "success get all data", data))
+	}
+}
+
+func (tc *TodoController) DeleteTodo() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := c.Param("id")
+		getId, err := utils.StringToUint(id)
+		if err != nil {
+			return c.JSON(400, helper.ResponseFormat(400, "input error", nil))
+		}
+		_, err = tc.srv.DeleteTodo(getId)
+		if err != nil {
+			return c.JSON(500, helper.ResponseFormat(500, "server error", nil))
+		}
+		return c.JSON(200, helper.ResponseFormat(200, "success delete data", nil))
+	}
+}

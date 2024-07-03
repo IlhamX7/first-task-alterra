@@ -13,6 +13,7 @@ type Todo struct {
 	Owner     uint
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	DeletedAt time.Time
 }
 
 // Error implements error.
@@ -23,21 +24,21 @@ func (t Todo) Error() string {
 type Handler interface {
 	AddTodo() echo.HandlerFunc
 	UpdateTodo() echo.HandlerFunc
-	// DeleteTodo() echo.HandlerFunc
-	// FindTodo() echo.HandlerFunc
+	DeleteTodo() echo.HandlerFunc
+	FindTodo() echo.HandlerFunc
 }
 
 type Services interface {
 	AddTodo(newActivity string, userId uint) error
 	UpdateTodo(id uint, newActivity string, newMark bool, owner uint) error
-	// DeleteTodo() error
-	// FindTodo(id uint) (todos.Todo, error)
+	DeleteTodo(id uint) (Todo, error)
+	FindTodo(id uint) ([]Todo, error)
 }
 
 type Query interface {
 	AddTodo(newTodo Todo) error
 	UpdateTodo(updateTodo Todo) error
-	// DeleteTodo() error
-	// FindTodo(owner uint) error
+	DeleteTodo(id uint) (Todo, error)
+	FindTodo(owner uint) ([]Todo, error)
 	GetTodo(id uint) (Todo, error)
 }
