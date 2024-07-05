@@ -30,3 +30,8 @@ type Query interface {
 	Register(newUser User) error
 	Login(email string) (User, error)
 }
+
+type LoginValidate struct {
+	Email    string `validate:"required,email"`
+	Password string
+}

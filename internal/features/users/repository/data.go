@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"first-task-alterra/internal/features/todos/repository"
 	"first-task-alterra/internal/features/users"
 	"time"
 
@@ -9,12 +10,12 @@ import (
 
 type User struct {
 	gorm.Model
-	Name      string    `json:"name"`
-	Password  string    `json:"password"`
-	Email     string    `json:"email"`
-	Phone     string    `json:"phone"`
-	BirthDate time.Time `json:"birth_date"`
-	// Todos     []todos.Todo    `gorm:"foreignKey:Owner"`
+	Name      string            `json:"name"`
+	Password  string            `json:"password"`
+	Email     string            `json:"email"`
+	Phone     string            `json:"phone"`
+	BirthDate time.Time         `json:"birth_date"`
+	Todos     []repository.Todo `gorm:"foreignKey:Owner"`
 }
 
 func (u *User) toUserEntity() users.User {

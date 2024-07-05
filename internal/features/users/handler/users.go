@@ -3,6 +3,7 @@ package handler
 import (
 	"first-task-alterra/internal/features/users"
 	"first-task-alterra/internal/helper"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -22,13 +23,18 @@ func (uc *UserController) Register() echo.HandlerFunc {
 		var input RegisterRequest
 		err := c.Bind(&input)
 		if err != nil {
+			c.Logger().Error("register parse error:", err.Error())
 			return c.JSON(400, helper.ResponseFormat(400, "input error", nil))
 		}
 
 		err = uc.srv.Register(ToModelUsers(input))
 
 		if err != nil {
-			return c.JSON(500, helper.ResponseFormat(500, "server error", nil))
+			errCode := 500
+			if strings.ContainsAny(err.Error(), "tidak valid") {
+				errCode = 400
+			}
+			return c.JSON(500, helper.ResponseFormat(errCode, "server error", nil))
 		}
 
 		return c.JSON(201, helper.ResponseFormat(201, "success insert data", nil))
@@ -40,13 +46,18 @@ func (uc *UserController) Login() echo.HandlerFunc {
 		var input LoginRequest
 		err := c.Bind(&input)
 		if err != nil {
+			c.Logger().Error("login parse error:", err.Error())
 			return c.JSON(400, helper.ResponseFormat(400, "input error", nil))
 		}
 
 		result, token, err := uc.srv.Login(input.Email, input.Password)
 
 		if err != nil {
-			return c.JSON(500, helper.ResponseFormat(500, "server error", nil))
+			errCode := 500
+			if strings.ContainsAny(err.Error(), "tidak ditemukan") {
+				errCode = 400
+			}
+			return c.JSON(500, helper.ResponseFormat(errCode, "server error", nil))
 		}
 
 		return c.JSON(200, helper.ResponseFormat(200, "success login", ToLoginReponse(result, token)))
