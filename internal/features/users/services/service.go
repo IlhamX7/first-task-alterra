@@ -84,5 +84,7 @@ func (us *UserServices) Login(email string, password string) (users.User, string
 		return users.User{}, "", errors.New(msg)
 	}
 
+	// token := "asdasd"
+
 	return result, token, nil
 }

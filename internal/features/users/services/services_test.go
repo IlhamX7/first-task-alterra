@@ -68,13 +68,23 @@ func TestLogin(t *testing.T) {
 		password := "somepassword"
 		token := "asdasd"
 
-		user, token, err := srv.Login(email, password)
+		expectedUser := users.User{
+			ID:       1,
+			Email:    email,
+			Password: "hashedpassword",
+		}
 
-		pu.AssertExpectations(t)
+		qry.On("Login", email).Return(expectedUser, nil)
+		// pu.On("CheckPassword", []byte(password), []byte(expectedUser.Password)).Return(nil)
+		// qry.On("GenerateToken", expectedUser.ID).Return(token, nil)
+
+		user, generatedToken, err := srv.Login(email, password)
+
 		qry.AssertExpectations(t)
+		pu.AssertExpectations(t)
 
 		assert.Nil(t, err)
-		assert.NotEmpty(t, user)
-		assert.NotEmpty(t, token)
+		assert.Equal(t, expectedUser, user)
+		assert.Equal(t, token, generatedToken)
 	})
 }
